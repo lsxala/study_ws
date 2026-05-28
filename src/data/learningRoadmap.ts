@@ -28,6 +28,51 @@ export const learningStages: LearningStage[] = [
       "Python 先学最常用的语法和小脚本，不一开始追求复杂算法。",
     topicIds: ["python-variables"],
   },
+  {
+    id: "api-testing",
+    title: "接口测试",
+    order: 4,
+    goal: "理解软件之间如何传递数据，并能检查接口返回是否正确。",
+    description:
+      "这一阶段会从 HTTP、请求、响应讲起，再逐步进入 Postman 和 Python requests。",
+    topicIds: [],
+  },
+  {
+    id: "web-automation",
+    title: "Web 自动化测试",
+    order: 5,
+    goal: "学会用脚本模拟用户操作网页，为重复测试节省时间。",
+    description:
+      "这一阶段会围绕 Selenium、元素定位、等待机制和简单脚本组织展开。",
+    topicIds: [],
+  },
+  {
+    id: "app-automation",
+    title: "APP 自动化测试",
+    order: 6,
+    goal: "了解移动端自动化测试的基本流程和常用工具。",
+    description:
+      "这一阶段会围绕 Appium、移动端元素定位和基础脚本展开，内容会在后续补充。",
+    topicIds: [],
+  },
+  {
+    id: "performance-testing",
+    title: "性能测试",
+    order: 7,
+    goal: "知道性能测试关注什么，并能理解基础压测结果。",
+    description:
+      "这一阶段会从性能指标开始，再进入 JMeter、场景设计、数据分析和报告。",
+    topicIds: [],
+  },
+  {
+    id: "ci-and-test-dev",
+    title: "持续集成和测试开发",
+    order: 8,
+    goal: "理解测试如何进入团队工程流程，并逐步接触测试平台能力。",
+    description:
+      "这一阶段会覆盖 Git、Jenkins、Docker、Mock 服务和简单测试平台，先作为进阶方向保留。",
+    topicIds: [],
+  },
 ];
 
 export const learningTopics: LearningTopic[] = [

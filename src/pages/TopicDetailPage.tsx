@@ -1,15 +1,11 @@
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { TopicStatusBadge } from "../components/TopicStatusBadge";
 import { getStageById, getTopicById } from "../data/learningRoadmap";
 import { getTopicStatus, readProgress, writeTopicStatus } from "../lib/progressStorage";
+import { getAdjacentTopics } from "../lib/roadmapProgress";
 import type { TopicStatus } from "../types/learning";
-
-const statusLabels: Record<TopicStatus, string> = {
-  "not-started": "未开始",
-  "in-progress": "学习中",
-  done: "已完成",
-};
 
 export function TopicDetailPage() {
   const { topicId } = useParams();
@@ -32,6 +28,11 @@ export function TopicDetailPage() {
     );
   }
 
+  const { previousTopic, nextTopic } = getAdjacentTopics(topic.id);
+  const prerequisiteTopics = topic.prerequisites
+    .map((prerequisiteId) => getTopicById(prerequisiteId))
+    .filter((item) => item !== undefined);
+
   function updateStatus(nextStatus: TopicStatus) {
     if (!topic) {
       return;
@@ -53,13 +54,58 @@ export function TopicDetailPage() {
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700">{stage.title}</span>
           <span className="rounded-md bg-slate-100 px-2.5 py-1 text-sm font-medium text-slate-600">{topic.level}</span>
-          <span className="rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-medium text-emerald-700">
-            {statusLabels[status]}
-          </span>
+          <TopicStatusBadge status={status} />
         </div>
         <h1 className="mt-4 text-3xl font-bold">{topic.title}</h1>
         <p className="mt-3 max-w-3xl leading-7 text-slate-600">{topic.summary}</p>
       </header>
+
+      <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <h2 className="text-lg font-semibold">学习位置</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            当前知识点属于「{stage.title}」。先看懂前置知识，再继续下一节，会更顺。
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {prerequisiteTopics.length > 0 ? (
+              prerequisiteTopics.map((prerequisite) => (
+                <Link
+                  key={prerequisite.id}
+                  to={`/topics/${prerequisite.id}`}
+                  className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-sky-50 hover:text-sky-700"
+                >
+                  前置：{prerequisite.title}
+                </Link>
+              ))
+            ) : (
+              <span className="rounded-md bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700">
+                不需要前置知识
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 lg:justify-end">
+          {previousTopic ? (
+            <Link
+              to={`/topics/${previousTopic.id}`}
+              className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              <ArrowLeft size={16} aria-hidden="true" />
+              上一节
+            </Link>
+          ) : null}
+          {nextTopic ? (
+            <Link
+              to={`/topics/${nextTopic.id}`}
+              className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-700"
+            >
+              下一节
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          ) : null}
+        </div>
+      </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
         <LearningBlock title="这是什么" content={topic.beginnerExplanation} />
@@ -81,6 +127,13 @@ export function TopicDetailPage() {
       </section>
 
       <section className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => updateStatus("not-started")}
+          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        >
+          标记未开始
+        </button>
         <button
           type="button"
           onClick={() => updateStatus("in-progress")}

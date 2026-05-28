@@ -1,4 +1,6 @@
-import { learningTopics } from "../data/learningRoadmap";
+import { Link } from "react-router-dom";
+import { TopicStatusBadge } from "../components/TopicStatusBadge";
+import { getStageById, learningTopics } from "../data/learningRoadmap";
 import { getTopicStatus, readProgress } from "../lib/progressStorage";
 
 export function ProgressPage() {
@@ -20,6 +22,33 @@ export function ProgressPage() {
         <ProgressCard label="全部知识点" value={learningTopics.length} />
         <ProgressCard label="学习中" value={inProgressCount} />
         <ProgressCard label="已完成" value={doneCount} />
+      </section>
+
+      <section className="rounded-lg border border-slate-200 bg-white">
+        <div className="border-b border-slate-100 p-5">
+          <h2 className="text-lg font-semibold">已开放知识点</h2>
+          <p className="mt-1 text-sm text-slate-500">这里只展示目前已经有详情页的主题，后续补内容后会自动增加。</p>
+        </div>
+        <div className="divide-y divide-slate-100">
+          {learningTopics.map((topic) => {
+            const stage = getStageById(topic.stageId);
+            const status = getTopicStatus(progress, topic.id);
+
+            return (
+              <Link
+                key={topic.id}
+                to={`/topics/${topic.id}`}
+                className="flex items-center justify-between gap-4 p-5 hover:bg-slate-50"
+              >
+                <span>
+                  <span className="block font-medium text-slate-950">{topic.title}</span>
+                  <span className="mt-1 block text-sm text-slate-500">{stage?.title}</span>
+                </span>
+                <TopicStatusBadge status={status} />
+              </Link>
+            );
+          })}
+        </div>
       </section>
     </div>
   );
